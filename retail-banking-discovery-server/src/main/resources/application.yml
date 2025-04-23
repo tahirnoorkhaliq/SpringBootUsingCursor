@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: retail-banking-discovery-server
+  cloud:
+    discovery:
+      enabled: true
+
+server:
+  port: 8761
+
+eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    wait-time-in-ms-when-sync-empty: 0
+    enable-self-preservation: false
+    eviction-interval-timer-in-ms: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    com.netflix.eureka: DEBUG
+    com.netflix.discovery: DEBUG 
