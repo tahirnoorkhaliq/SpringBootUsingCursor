@@ -1,5 +1,6 @@
 package com.retail.banking.account.controller;
 
+import com.retail.banking.account.exception.AccountServiceException;
 import com.retail.banking.account.service.FakeStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class FakeStoreController {
         try {
             return ResponseEntity.ok(fakeStoreService.getAllProducts());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            throw new AccountServiceException("Failed to fetch products: " + e.getMessage(), e);
         }
     }
 
@@ -33,7 +34,7 @@ public class FakeStoreController {
         try {
             return ResponseEntity.ok(fakeStoreService.getProductById(id));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            throw new AccountServiceException("Failed to fetch product with id " + id + ": " + e.getMessage(), e);
         }
     }
 
@@ -42,7 +43,7 @@ public class FakeStoreController {
         try {
             return ResponseEntity.ok(fakeStoreService.getProductsByCategory(category));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            throw new AccountServiceException("Failed to fetch products for category " + category + ": " + e.getMessage(), e);
         }
     }
 } 

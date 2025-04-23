@@ -28,6 +28,12 @@ spring:
             - Path=/api/v1/soap-client/**
           filters:
             - StripPrefix=2
+        - id: number-service
+          uri: lb://retail-banking-number-service
+          predicates:
+            - Path=/api/v1/numbers/**
+          filters:
+            - StripPrefix=2
       discovery:
         locator:
           enabled: true

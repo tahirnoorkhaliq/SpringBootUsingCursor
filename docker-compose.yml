@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    image: retail-banking-eureka-server:latest
+    build:
+      context: .
+      dockerfile: retail-banking-eureka-server/Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - retail-banking-network
+
+  api-gateway:
+    image: retail-banking-api-gateway:latest
+    build:
+      context: .
+      dockerfile: retail-banking-api-gateway/Dockerfile
+    ports:
+      - "8085:8085"
+    depends_on:
+      - eureka-server
+    environment:
+      - SPRING_CLOUD_CONFIG_ENABLED=false
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    networks:
+      - retail-banking-network
+
+  account-service:
+    image: retail-banking-account-service:latest
+    build:
+      context: .
+      dockerfile: retail-banking-account-service/Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+    environment:
+      - SPRING_CLOUD_CONFIG_ENABLED=false
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    networks:
+      - retail-banking-network
+
+  http-client-service:
+    image: retail-banking-http-client-service:latest
+    build:
+      context: .
+      dockerfile: retail-banking-http-client-service/Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+    environment:
+      - SPRING_CLOUD_CONFIG_ENABLED=false
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    networks:
+      - retail-banking-network
+
+  number-service:
+    image: retail-banking-number-service:latest
+    build:
+      context: .
+      dockerfile: retail-banking-number-service/Dockerfile
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+    environment:
+      - SPRING_CLOUD_CONFIG_ENABLED=false
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    networks:
+      - retail-banking-network
+
+networks:
+  retail-banking-network:
+    driver: bridge 

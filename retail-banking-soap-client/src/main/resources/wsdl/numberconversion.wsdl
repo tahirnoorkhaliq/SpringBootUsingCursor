@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.dataaccess.com/webservicesserver/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="NumberConversion" targetNamespace="http://www.dataaccess.com/webservicesserver/">
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://www.dataaccess.com/webservicesserver/">
+            <xsd:element name="NumberToWords">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="ubiNum" type="xsd:unsignedLong"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="NumberToWordsResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="NumberToWordsResult" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="NumberToDollars">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="dNum" type="xsd:decimal"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="NumberToDollarsResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="NumberToDollarsResult" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </wsdl:types>
+    <wsdl:message name="NumberToWordsSoapRequest">
+        <wsdl:part name="parameters" element="tns:NumberToWords"/>
+    </wsdl:message>
+    <wsdl:message name="NumberToWordsSoapResponse">
+        <wsdl:part name="parameters" element="tns:NumberToWordsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="NumberToDollarsSoapRequest">
+        <wsdl:part name="parameters" element="tns:NumberToDollars"/>
+    </wsdl:message>
+    <wsdl:message name="NumberToDollarsSoapResponse">
+        <wsdl:part name="parameters" element="tns:NumberToDollarsResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="NumberConversionSoapType">
+        <wsdl:operation name="NumberToWords">
+            <wsdl:input message="tns:NumberToWordsSoapRequest"/>
+            <wsdl:output message="tns:NumberToWordsSoapResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="NumberToDollars">
+            <wsdl:input message="tns:NumberToDollarsSoapRequest"/>
+            <wsdl:output message="tns:NumberToDollarsSoapResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="NumberConversionSoapBinding" type="tns:NumberConversionSoapType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="NumberToWords">
+            <soap:operation soapAction="http://www.dataaccess.com/webservicesserver/NumberToWords"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="NumberToDollars">
+            <soap:operation soapAction="http://www.dataaccess.com/webservicesserver/NumberToDollars"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="NumberConversion">
+        <wsdl:port name="NumberConversionSoap" binding="tns:NumberConversionSoapBinding">
+            <soap:address location="https://www.dataaccess.com/webservicesserver/NumberConversion.wso"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions> 

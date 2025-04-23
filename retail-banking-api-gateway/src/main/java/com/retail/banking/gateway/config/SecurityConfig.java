@@ -24,6 +24,7 @@ public class SecurityConfig {
                 .pathMatchers("/api/v1/accounts/**").authenticated()
                 .pathMatchers("/api/v1/http-client/**").authenticated()
                 .pathMatchers("/api/v1/soap-client/**").authenticated()
+                .pathMatchers("/api/v1/numbers/**").permitAll()
                 .anyExchange().permitAll()
             )
             .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
