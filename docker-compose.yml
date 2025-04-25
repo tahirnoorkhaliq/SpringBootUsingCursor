@@ -1,76 +1,57 @@
 version: '3.8'
 
 services:
-  eureka-server:
-    image: retail-banking-eureka-server:latest
+  discovery-server:
     build:
       context: .
-      dockerfile: retail-banking-eureka-server/Dockerfile
+      dockerfile: retail-banking-discovery-server/Dockerfile
     ports:
       - "8761:8761"
     networks:
       - retail-banking-network
 
   api-gateway:
-    image: retail-banking-api-gateway:latest
     build:
       context: .
       dockerfile: retail-banking-api-gateway/Dockerfile
     ports:
-      - "8085:8085"
+      - "8080:8080"
     depends_on:
-      - eureka-server
-    environment:
-      - SPRING_CLOUD_CONFIG_ENABLED=false
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - discovery-server
     networks:
       - retail-banking-network
 
   account-service:
-    image: retail-banking-account-service:latest
     build:
       context: .
       dockerfile: retail-banking-account-service/Dockerfile
     ports:
       - "8081:8081"
     depends_on:
-      - eureka-server
+      - discovery-server
+      - mysql
     environment:
-      - SPRING_CLOUD_CONFIG_ENABLED=false
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/retail_banking?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
     networks:
       - retail-banking-network
 
-  http-client-service:
-    image: retail-banking-http-client-service:latest
-    build:
-      context: .
-      dockerfile: retail-banking-http-client-service/Dockerfile
+  mysql:
+    image: mysql:8.0
     ports:
-      - "8082:8082"
-    depends_on:
-      - eureka-server
+      - "3306:3306"
     environment:
-      - SPRING_CLOUD_CONFIG_ENABLED=false
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-    networks:
-      - retail-banking-network
-
-  number-service:
-    image: retail-banking-number-service:latest
-    build:
-      context: .
-      dockerfile: retail-banking-number-service/Dockerfile
-    ports:
-      - "8083:8083"
-    depends_on:
-      - eureka-server
-    environment:
-      - SPRING_CLOUD_CONFIG_ENABLED=false
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=retail_banking
+    volumes:
+      - mysql_data:/var/lib/mysql
     networks:
       - retail-banking-network
 
 networks:
   retail-banking-network:
-    driver: bridge 
+    driver: bridge
+
+volumes:
+  mysql_data: 

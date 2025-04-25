@@ -1,3 +1,11 @@
+#!/bin/bash
+
+# Create a temporary directory for the SOAP client
+mkdir -p temp/soap-client/src
+cp -r ../retail-banking-soap-client/src/* temp/soap-client/src/
+
+# Create the SOAP client's pom.xml
+cat > temp/soap-client/pom.xml << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -12,11 +20,10 @@
     </parent>
 
     <groupId>com.retail.banking</groupId>
-    <artifactId>retail-banking-http-client-service</artifactId>
+    <artifactId>retail-banking-soap-client</artifactId>
     <version>1.0.0</version>
-    <name>retail-banking-http-client-service</name>
-    <description>HTTP Client Service for Retail Banking</description>
-    <packaging>jar</packaging>
+    <name>retail-banking-soap-client</name>
+    <description>SOAP Client for Retail Banking</description>
 
     <properties>
         <java.version>21</java.version>
@@ -29,16 +36,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents.client5</groupId>
-            <artifactId>httpclient5</artifactId>
-            <version>5.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <artifactId>spring-boot-starter-web-services</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -52,26 +50,23 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
-</project> 
+</project>
+EOF
+
+# Install the SOAP client
+cd temp/soap-client
+mvn clean install -DskipTests
+cd ../..
+
+# Build the number service
+mvn clean package -DskipTests
+
+# Clean up
+rm -rf temp 
