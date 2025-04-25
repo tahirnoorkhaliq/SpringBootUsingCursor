@@ -37,6 +37,17 @@ services:
     networks:
       - retail-banking-network
 
+  number-service:
+    build:
+      context: .
+      dockerfile: retail-banking-number-service/Dockerfile
+    ports:
+      - "8083:8083"
+    depends_on:
+      - discovery-server
+    networks:
+      - retail-banking-network
+
   mysql:
     image: mysql:8.0
     ports:
