@@ -9,7 +9,7 @@ spring:
   jackson:
     default-property-inclusion: non_null
   datasource:
-    url: jdbc:mysql://localhost:3306/retail_banking?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://mysql:3306/retail_banking?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -28,14 +28,14 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://discovery-server:8761/eureka
     register-with-eureka: true
     fetch-registry: true
     healthcheck:
       enabled: true
   instance:
     prefer-ip-address: true
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    hostname: ${HOSTNAME}
     lease-renewal-interval-in-seconds: 30
     lease-expiration-duration-in-seconds: 90
 
