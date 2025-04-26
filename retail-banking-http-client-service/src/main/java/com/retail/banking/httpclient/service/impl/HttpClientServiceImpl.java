@@ -5,9 +5,9 @@ import com.retail.banking.httpclient.service.HttpClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.classic.methods.*;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.ConnectionClosedException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,8 +20,8 @@ public class HttpClientServiceImpl implements HttpClientService {
     private final CloseableHttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-    public HttpClientServiceImpl() {
-        this.httpClient = HttpClients.createDefault();
+    public HttpClientServiceImpl(CloseableHttpClient httpClient) {
+        this.httpClient = httpClient;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -86,14 +86,28 @@ public class HttpClientServiceImpl implements HttpClientService {
     private <T> T executeRequest(HttpUriRequestBase request, Class<T> responseType) throws IOException {
         try {
             return httpClient.execute(request, response -> {
-                if (responseType == Void.class) {
-                    return null;
+                try {
+                    if (responseType == Void.class) {
+                        return null;
+                    }
+                    return objectMapper.readValue(response.getEntity().getContent(), responseType);
+                } catch (IOException e) {
+                    log.error("Error reading response content: {}", e.getMessage());
+                    throw new IOException("Failed to read response content", e);
                 }
-                return objectMapper.readValue(response.getEntity().getContent(), responseType);
             });
+        } catch (ConnectionClosedException e) {
+            log.error("Connection closed unexpectedly: {}", e.getMessage());
+            throw new IOException("Connection closed unexpectedly", e);
+        } catch (org.apache.hc.core5.http.NoHttpResponseException e) {
+            log.error("No response received from server: {}", e.getMessage());
+            throw new IOException("No response received from server", e);
         } catch (IOException e) {
             log.error("Error executing HTTP request: {}", e.getMessage());
-            throw e;
+            throw new IOException("Failed to execute HTTP request", e);
+        } catch (Exception e) {
+            log.error("Unexpected error during HTTP request: {}", e.getMessage());
+            throw new IOException("Unexpected error during HTTP request", e);
         }
     }
 } 
